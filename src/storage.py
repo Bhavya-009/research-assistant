@@ -28,3 +28,20 @@ def save_summary(paper, summary):
 
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(summaries, f, indent=4, ensure_ascii=False)
+
+
+def delete_summary(index):
+
+    filename = "data/summaries/summaries.json"
+
+    if not os.path.exists(filename):
+        return
+
+    with open(filename, "r", encoding="utf-8") as f:
+        summaries = json.load(f)
+
+    if 0 <= index < len(summaries):
+        summaries.pop(index)
+
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(summaries, f, indent=4, ensure_ascii=False)
