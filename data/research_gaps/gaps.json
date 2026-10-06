@@ -8,5 +8,16 @@
         ],
         "status": "Exploring",
         "created_at": "2026-10-06T20:11:43.321143"
+    },
+    {
+        "gap": "There is currently no hardware‑based technique that can reliably detect whether a specific input was part of a model’s training set when the model runs in a constant‑time, branch‑free manner. Existing membership‑inference methods rely on surrogate models or expensive side‑channel attacks, and no cycle‑level study has linked training‑time tokenization to inference‑time memory‑access patterns on modern micro‑architectures.",
+        "direction": "Explore additional micro‑architectural signals—such as cache‑hierarchy activity, branch‑predictor statistics, or GPU shader‑core utilization—to build a more general hardware‑based membership‑inference framework. This could involve extending TranScope to support a wider range of processors and model families, and evaluating whether these signals improve detection accuracy or reduce inference cost.",
+        "papers": [
+            "LeapQuant: Efficient Linear Attention with Accurate Recurrent State Quantization",
+            "Multi-Agent Flow Matching with Decoupled Generative Guidance",
+            "TranScope: What the Software Hides About LLM Training Data, the Hardware Reveals at Scale, and Accelerators Magnify"
+        ],
+        "status": "New",
+        "created_at": "2026-10-06T21:07:47.024923"
     }
 ]

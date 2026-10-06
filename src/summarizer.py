@@ -146,3 +146,58 @@ Explanation: <1-2 sentences>
     })
 
     return response.content
+
+def generate_research_direction(gap, direction, papers_text):
+
+    prompt = ChatPromptTemplate.from_template(
+        """
+You are a research assistant helping a college student
+convert a research gap into a practical research proposal.
+
+Research Gap:
+{gap}
+
+Potential Research Direction:
+{direction}
+
+Related Papers:
+{papers_text}
+
+Generate a focused research question and a practical methodology.
+
+Return EXACTLY this format:
+
+RESEARCH QUESTION:
+<one clear and specific research question>
+
+METHODOLOGY:
+1. Dataset / Data Collection:
+<what data is required and where it can be obtained>
+
+2. Proposed Approach:
+<models, algorithms, agents, or techniques that could be used>
+
+3. Evaluation:
+<metrics and experiments that can be used to evaluate the approach>
+
+4. Baseline:
+<what existing approach or method should be used for comparison>
+
+5. Expected Outcome:
+<what the research aims to demonstrate>
+
+Keep the proposal realistic for a college research project.
+Do not claim that the proposed approach will definitely work.
+Do not invent experimental results.
+"""
+    )
+
+    chain = prompt | llm
+
+    response = chain.invoke({
+        "gap": gap,
+        "direction": direction,
+        "papers_text": papers_text
+    })
+
+    return response.content
