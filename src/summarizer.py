@@ -1,15 +1,15 @@
 import os
 
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
 load_dotenv()
 
 # Initialize Gemini through LangChain
-llm = ChatGoogleGenerativeAI(
-    model="gemini-3.6-flash",
-    google_api_key=os.getenv("GOOGLE_API_KEY"),
+llm = ChatGroq(
+    model="openai/gpt-oss-20b",
+    api_key=os.getenv("GROQ_API_KEY"),
     temperature=0.2
 )
 
@@ -60,30 +60,24 @@ Analyze the following research papers:
 
 {papers_text}
 
-Provide the analysis using exactly these sections:
+Identify the most important research gap and a practical potential
+research direction.
 
-1. Common Problem
-Explain the main problem addressed across the papers.
+Return EXACTLY in this format:
 
-2. Existing Approaches
-Describe the main technologies or approaches used.
+RESEARCH GAP:
+<2-4 sentence explanation of the research gap>
 
-3. Limitations
-Identify important limitations or unresolved issues.
+POTENTIAL RESEARCH DIRECTION:
+<2-4 sentence explanation of a possible research direction>
 
-4. Research Gaps
-Identify areas that are not adequately addressed by the existing papers.
-Only mention gaps that can reasonably be inferred from the papers.
+LIMITATIONS:
+<2-4 sentence explanation of the limitations that lead to this gap>
 
-5. Potential Research Direction
-Suggest a practical research direction based on the identified gaps.
-Do not present it as a proven solution.
-
-6. Paper Relationship
-Explain briefly how the selected papers are related to each other.
-
+Do not add any other sections.
 Keep the language simple and suitable for a college research project.
-Avoid making unsupported claims.
+Only mention gaps that can reasonably be inferred from the papers.
+Do not present the potential direction as a proven solution.
 """
     )
 
@@ -91,6 +85,64 @@ Avoid making unsupported claims.
 
     response = chain.invoke({
         "papers_text": papers_text
+    })
+
+    return response.content
+
+def analyze_paper_relationship(
+    original_paper,
+    related_paper
+):
+    prompt = ChatPromptTemplate.from_template(
+        """
+You are a research assistant.
+
+Compare these two research papers and determine how they
+are related.
+
+ORIGINAL PAPER
+Title:
+{original_title}
+
+Abstract:
+{original_abstract}
+
+
+RELATED PAPER
+Title:
+{related_title}
+
+Abstract:
+{related_abstract}
+
+
+Choose the MOST appropriate relationship from:
+
+1. Same Problem
+2. Similar Methodology
+3. Extension of Previous Work
+4. Improvement over Previous Work
+5. Different Approach to Same Problem
+6. Weakly Related
+7. Not Clearly Related
+
+Then explain the relationship in 1-2 simple sentences.
+
+Return exactly this format:
+
+Relationship: <one category>
+
+Explanation: <1-2 sentences>
+"""
+    )
+
+    chain = prompt | llm
+
+    response = chain.invoke({
+        "original_title": original_paper["title"],
+        "original_abstract": original_paper["summary"],
+        "related_title": related_paper["title"],
+        "related_abstract": related_paper["summary"]
     })
 
     return response.content

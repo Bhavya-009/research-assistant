@@ -27,6 +27,9 @@ def search_papers(query, max_results=5):
             authors
         )
 
+        # arXiv provides a free full-text PDF
+        access_status = "Free"
+
         papers.append({
             "title": result.title,
 
@@ -35,6 +38,8 @@ def search_papers(query, max_results=5):
             "summary": result.summary,
 
             "url": result.entry_id,
+
+            "pdf_url": result.pdf_url,
 
             "published": result.published.strftime(
                 "%Y-%m-%d"
@@ -52,7 +57,9 @@ def search_papers(query, max_results=5):
 
             "quartile_source": metadata[
                 "quartile_source"
-            ]
+            ],
+
+            "access_status": access_status
         })
 
     return papers

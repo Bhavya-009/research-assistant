@@ -1,0 +1,7 @@
+streamlit
+langchain-core
+langchain-groq
+arxiv
+pypdf
+python-dotenv
+requests

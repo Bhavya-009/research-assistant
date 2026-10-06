@@ -3,10 +3,9 @@ from dotenv import load_dotenv
 
 from src.research_library import load_saved_summaries
 from src.summarizer import find_research_gaps
-
+from src.storage import save_research_gap
 
 load_dotenv()
-
 
 st.title("Research Gaps")
 
@@ -14,9 +13,15 @@ st.write(
     "Select research papers and use AI to identify potential research gaps."
 )
 
-
 # Load saved papers
 saved_summaries = load_saved_summaries()
+
+# Initialize session state
+if "research_gap_result" not in st.session_state:
+    st.session_state.research_gap_result = None
+
+if "research_gap_papers" not in st.session_state:
+    st.session_state.research_gap_papers = []
 
 
 # Need at least 2 papers
@@ -32,20 +37,17 @@ else:
         f"{len(saved_summaries)} saved papers available."
     )
 
-
     # Select papers
     paper_options = [
         paper["title"]
         for paper in saved_summaries
     ]
 
-
     selected_titles = st.multiselect(
         "Select papers to compare",
         paper_options,
         default=paper_options
     )
-
 
     # Get selected papers
     selected_papers = [
@@ -54,9 +56,7 @@ else:
         if paper["title"] in selected_titles
     ]
 
-
     st.divider()
-
 
     # Check number of selected papers
     if len(selected_papers) < 2:
@@ -65,11 +65,9 @@ else:
             "Select at least 2 papers for comparison."
         )
 
-
     else:
 
         st.subheader("Selected Papers")
-
 
         # Display selected papers
         for i, paper in enumerate(selected_papers, 1):
@@ -97,33 +95,27 @@ else:
                     paper["url"]
                 )
 
-
         st.divider()
-
 
         # Test rate limit option
         simulate_rate_limit = st.checkbox(
             "Test rate limit error"
         )
 
-
-        # Find Research Gaps button
+        # Find Research Gaps
         if st.button("Find Research Gaps"):
 
-            # Manual rate-limit simulation
             if simulate_rate_limit:
 
                 st.error(
-                    "⚠️ Gemini API rate limit reached. "
+                    "⚠️ API rate limit reached. "
                     "Please try again later."
                 )
-
 
             else:
 
                 # Prepare paper summaries
                 papers_text = ""
-
 
                 for i, paper in enumerate(selected_papers, 1):
 
@@ -137,7 +129,6 @@ Summary:
 -------------------------
 """
 
-
                 # Call AI
                 with st.spinner(
                     "AI is analyzing the selected papers..."
@@ -149,15 +140,14 @@ Summary:
                             papers_text
                         )
 
+                        # Store result in session state
+                        st.session_state.research_gap_result = result
 
-                        st.subheader(
-                            "Research Gap Analysis"
-                        )
-
-                        st.write(
-                            result
-                        )
-
+                        # Store selected papers
+                        st.session_state.research_gap_papers = [
+                            paper["title"]
+                            for paper in selected_papers
+                        ]
 
                     except Exception as e:
 
@@ -168,3 +158,41 @@ Summary:
                         st.warning(
                             f"API/Model error: {str(e)}"
                         )
+
+
+        # Display saved AI result
+        if st.session_state.research_gap_result:
+
+            st.subheader("Research Gap Analysis")
+
+            st.write(
+                st.session_state.research_gap_result
+            )
+
+            st.divider()
+
+            # Save button is now OUTSIDE the Find Research Gaps button
+            if st.button("💾 Save This Research Gap"):
+
+                result = st.session_state.research_gap_result
+
+                # Extract sections from AI response
+                gap = result.split("POTENTIAL RESEARCH DIRECTION:")[0]
+                gap = gap.replace("RESEARCH GAP:", "").strip()
+
+                direction = result.split("POTENTIAL RESEARCH DIRECTION:")[1]
+
+                if "LIMITATIONS:" in direction:
+                    direction = direction.split("LIMITATIONS:")[0]
+
+                direction = direction.strip()
+
+                save_research_gap(
+                    gap=gap,
+                    direction=direction,
+                    papers=st.session_state.research_gap_papers
+                )
+
+                st.success(
+                    "Research gap saved successfully."
+                )
