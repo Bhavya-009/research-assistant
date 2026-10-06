@@ -110,8 +110,26 @@ if st.session_state.papers:
         )
 
         st.write(
+            f"**Journal:** {paper.get('journal', 'Not specified')}"
+        )
+
+        st.write(
+            f"**Venue:** {paper.get('venue', 'Not found')}"
+        )
+
+        st.write(
+            f"**Type:** {paper.get('venue_type', 'Unknown')}"
+        )
+
+        if paper.get("doi"):
+            st.write(
+                f"**DOI:** {paper['doi']}"
+    )
+
+        st.write(
             f"**Authors:** {', '.join(paper['authors'])}"
         )
+
 
         st.write(
             paper["summary"]
