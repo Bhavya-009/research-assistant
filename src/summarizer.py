@@ -4,9 +4,7 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 
-
 load_dotenv()
-
 
 # Initialize Gemini through LangChain
 llm = ChatGoogleGenerativeAI(
@@ -55,21 +53,37 @@ def find_research_gaps(papers_text):
 
     prompt = ChatPromptTemplate.from_template(
         """
-You are a research assistant analyzing multiple research papers.
+You are a research assistant helping a college student identify
+research opportunities from existing papers.
 
-Analyze the following papers:
+Analyze the following research papers:
 
 {papers_text}
 
-Identify:
+Provide the analysis using exactly these sections:
 
-1. Common Problems
-2. Common Approaches
+1. Common Problem
+Explain the main problem addressed across the papers.
+
+2. Existing Approaches
+Describe the main technologies or approaches used.
+
 3. Limitations
-4. Potential Research Gaps
-5. Future Research Directions
+Identify important limitations or unresolved issues.
 
-Keep the analysis simple, concise, and suitable for a college research project.
+4. Research Gaps
+Identify areas that are not adequately addressed by the existing papers.
+Only mention gaps that can reasonably be inferred from the papers.
+
+5. Potential Research Direction
+Suggest a practical research direction based on the identified gaps.
+Do not present it as a proven solution.
+
+6. Paper Relationship
+Explain briefly how the selected papers are related to each other.
+
+Keep the language simple and suitable for a college research project.
+Avoid making unsupported claims.
 """
     )
 

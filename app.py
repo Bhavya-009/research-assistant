@@ -24,17 +24,19 @@ if "papers" not in st.session_state:
 interests = load_research_interests()
 
 
+# --------------------------------------------------
+# RESEARCH INTERESTS
+# --------------------------------------------------
+
 st.subheader("Research Interests")
 
 
-# Enter new interest
 topic = st.text_input(
     "Enter a research interest",
     placeholder="e.g. AI agents, cloud computing, computer vision"
 )
 
 
-# Add interest
 if st.button("Add Interest"):
 
     if not topic.strip():
@@ -52,11 +54,7 @@ if st.button("Add Interest"):
         st.rerun()
 
 
-# Reload interests after adding
-interests = load_research_interests()
 
-
-# Select interest for paper search
 if interests:
 
     selected_interest = st.selectbox(
@@ -73,7 +71,7 @@ else:
     )
 
 
-# Find papers
+
 if st.button("Find Papers"):
 
     if not selected_interest:
@@ -92,7 +90,6 @@ if st.button("Find Papers"):
             )
 
 
-# Display papers
 if st.session_state.papers:
 
     st.success(
