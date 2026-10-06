@@ -2,7 +2,8 @@ import streamlit as st
 
 from src.storage import (
     load_research_gaps,
-    update_research_gap_status
+    update_research_gap_status,
+    save_research_proposal
 )
 
 from src.summarizer import generate_research_direction
@@ -181,6 +182,11 @@ else:
                             f"proposal_{i}"
                         ] = result
 
+                        save_research_proposal(
+                            i,
+                            result
+                        )
+
 
                     except Exception as e:
 
@@ -197,13 +203,12 @@ else:
             # DISPLAY GENERATED PROPOSAL
             # ------------------------------------------
 
-            if f"proposal_{i}" in st.session_state:
+            saved_proposal = item.get("research_proposal")
 
-                st.write(
-                    st.session_state[
-                        f"proposal_{i}"
-                    ]
-                )
+            if saved_proposal:
+                st.write(saved_proposal)
+            elif f"proposal_{i}" in st.session_state:
+                st.write(st.session_state[f"proposal_{i}"])
 
 
             # ==================================================

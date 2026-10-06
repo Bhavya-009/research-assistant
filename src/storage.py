@@ -145,3 +145,24 @@ def update_research_gap_status(index, status):
             indent=4,
             ensure_ascii=False
         )
+
+def save_research_proposal(index, proposal):
+
+    filename = "data/research_gaps/gaps.json"
+
+    if not os.path.exists(filename):
+        return
+
+    with open(filename, "r", encoding="utf-8") as f:
+        gaps = json.load(f)
+
+    if 0 <= index < len(gaps):
+        gaps[index]["research_proposal"] = proposal
+
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(
+            gaps,
+            f,
+            indent=4,
+            ensure_ascii=False
+        )
